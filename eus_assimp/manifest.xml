@@ -11,6 +11,8 @@
 
   <depend package="roseus" />
   <depend package="assimp_devel" />
+
+  <depend package="fcl" />
 </package>
 
 

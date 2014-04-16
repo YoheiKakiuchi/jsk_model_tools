@@ -58,3 +58,5 @@ endif()
 
 rosbuild_add_compile_flags(eus_assimp ${COMPILE_FLAGS})
 set_target_properties(eus_assimp PROPERTIES PREFIX "" SUFFIX ".so")
+
+rosbuild_add_library(test_fcl src/test_fcl.cpp)

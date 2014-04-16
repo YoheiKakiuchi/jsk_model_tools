@@ -1,0 +1,35 @@
+(load "package://eus_assimp/euslisp/eus-assimp.l")
+
+(let ((foreign-lib
+       (load-foreign "lib/libtest_fcl.so")))
+  (defforeign raw-col-check foreign-lib "eus_col_check" (:string :string) :integer)
+  )
+(setq rob (load-mesh-file "rob.obj" :gen-normal t))
+(send rob :set-color #f(0.4 0.2 0.7))
+(setq env (load-mesh-file "env.obj" :gen-normal t))
+(send env :set-color #f(0.2 0.7 0.2))
+(objects (list rob env))
+
+(defun col-check (cds)
+  (let ((ret (raw-col-check (send cds :pos) (matrix2quaternion (send cds :rot)))))
+    (send rob :move-to cds :world)
+    (cond
+     ((= ret 0)
+      (send rob :set-color #f(0.4 0.2 0.7))
+      (send *irtviewer* :draw-objects)
+      )
+     ((= ret 1)
+      (warn "collision~%")
+      (send rob :set-color #f(1.0 0.0 0.0))
+      (send *irtviewer* :draw-objects)
+      )
+     )
+    ))
+
+(defun check (&optional (tm 100))
+  (dotimes (i tm)
+    (let ((cds (make-coords :pos (scale 6000 (random-vector)) :rpy (scale pi (random-vector)))))
+      (col-check cds)
+      (do-until-key
+       (x::window-main-one))
+      (read-line))))
