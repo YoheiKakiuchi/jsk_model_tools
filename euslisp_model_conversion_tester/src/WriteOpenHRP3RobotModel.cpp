@@ -142,7 +142,7 @@ public:
       ofs << indent << name << ":" << std::endl;
       writeMassProperties(m_robot->link(i), child_indent);
       if (m_robot->link(i)->name != std::string(m_robot->rootLink()->name)) {
-        //writeLinkProperties(m_robot->link(i)->b, m_robot->link(i)->Rs, child_indent);
+        writeLinkProperties(m_robot->link(i)->b, m_robot->link(i)->Rs, child_indent);
         writeLinkProperties(hrp::Vector3(m_robot->link(i)->parent->R.transpose() * (m_robot->link(i)->p - m_robot->link(i)->parent->p)),
                             hrp::Matrix33(m_robot->link(i)->parent->R.transpose() * m_robot->link(i)->R),
                             child_indent);
