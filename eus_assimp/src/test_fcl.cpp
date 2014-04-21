@@ -257,10 +257,15 @@ double distance_test(const fcl::Transform3f& tf,
   //fcl::collide(o1, o2, request, local_result);
 
   struct timeval tv_s, tv_e;
+  double results[1000];
   gettimeofday(&tv_s, NULL);
+  for(int i = 0; i < 1000; i++) {
+    fcl::DistanceResult l;
+    results[i] = fcl::distance(m1, pose1, m2, pose2, request, l);
+  }
   fcl::distance(m1, pose1, m2, pose2, request, local_result);
   gettimeofday(&tv_e, NULL);
-  double msec = (tv_e.tv_sec - tv_s.tv_sec) * 1000.0 + (tv_e.tv_usec - tv_s.tv_usec) / 1000.0;
+  double msec = ((tv_e.tv_sec - tv_s.tv_sec) * 1000.0 + (tv_e.tv_usec - tv_s.tv_usec) / 1000.0) / 1000.0;
 
   n1[0] = local_result.nearest_points[0][0];
   n1[1] = local_result.nearest_points[0][1];
@@ -270,7 +275,7 @@ double distance_test(const fcl::Transform3f& tf,
   n2[2] = local_result.nearest_points[1][2];
 
   if (verbose) {
-    std::cout << "time: " << msec << "milli second" std::endl;
+    std::cout << "time: " << msec << " milli second" << std::endl;
     std::cout << "#f(" << local_result.nearest_points[0][0] << " ";
     std::cout << local_result.nearest_points[0][1] << " ";
     std::cout << local_result.nearest_points[0][2] << ")";
