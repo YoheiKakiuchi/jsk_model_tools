@@ -48,9 +48,8 @@
        ))
     ))
 
-(defun collision-viewer (&key (tm 100) (object-type 4) (split-method 0) (verbose 1))
-  (setq glv1 (load-mesh-file "table.dae" :scale 1000.0))
-  (setq glv2 (load-mesh-file "table.dae" :scale 1000.0))
+(defun collision-viewer (glv1 glv2 &key  (tm 100) (object-type 4) (split-method 0) (verbose 1))
+
   (setq pc (instance pointcloud :init
                      :points (list #f(-1000 0 0) #f(1000 0 0) #f(0 -1000 0)
                                    #f(0 1000 0) #f(0 0 -1000) #f(0 0 1000))))
@@ -80,3 +79,7 @@
        (send ln :draw-on :width 3.0 :color #f(0 0.7 0) :flush t)
        (x::window-main-one))
       )))
+
+;;(setq glv1 (load-mesh-file "table.dae" :scale 1000.0))
+;;(setq glv2 (load-mesh-file "table.dae" :scale 1000.0))
+;;(collision-viewer glv1 glv2)
