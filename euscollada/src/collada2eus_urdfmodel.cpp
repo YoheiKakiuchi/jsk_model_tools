@@ -1183,7 +1183,9 @@ void ModelEuslisp::printGeometry (boost::shared_ptr<Geometry> g, const Pose &pos
     }
     // qhull
     if (points.size() > 0) {
-      char qhull_attr[] = "qhull C-0.001";
+      //char qhull_attr[] = "qhull C-0.001"; // see http://www.qhull.org/html/qhull.htm#options
+      //char qhull_attr[] = "qhull Qt Tc";   //
+      char qhull_attr[] = "qhull C-0.002 A-0.9995";
       int ret = qh_new_qhull (3, points.size()/3, &points[0], 0, qhull_attr, NULL, stderr);
       fprintf(fp, "      (setq qhull\n");
       if ( ret ) {
