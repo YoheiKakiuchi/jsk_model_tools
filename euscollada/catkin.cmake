@@ -18,6 +18,8 @@ pkg_check_modules(urdf_dom urdfdom REQUIRED)
 ENDIF()
 pkg_check_modules(colladadom collada-dom-150 REQUIRED)
 pkg_check_modules(yaml_cpp yaml-cpp REQUIRED)
+pkg_check_modules(libpcrecpp libpcrecpp)
+
 IF(${yaml_cpp_VERSION} VERSION_GREATER "0.5.0")
 ## indigo yaml-cpp : 0.5.0 /  hydro yaml-cpp : 0.3.0
   add_definitions("-DUSE_CURRENT_YAML")
@@ -33,10 +35,13 @@ add_dependencies(collada2eus libassimp_devel)
 find_package(Boost REQUIRED system)
 include_directories(${Boost_INCLUDE_DIR})
 add_executable(collada2eus_urdfmodel src/collada2eus_urdfmodel.cpp)
-target_link_libraries(collada2eus_urdfmodel ${catkin_LIBRARIES} qhull ${yaml_cpp_LIBRARIES} ${colladadom_LIBRARIES} ${collada_parser_LIBRARIES} ${recource_retriever_LIBRARIES} ${assimpdevel_LIBRARIES} ${Boost_LIBRARIES} ${urdf_dom_LIBRARIES})
+target_link_libraries(collada2eus_urdfmodel ${catkin_LIBRARIES} qhull ${yaml_cpp_LIBRARIES} ${colladadom_LIBRARIES} ${collada_parser_LIBRARIES} ${recource_retriever_LIBRARIES} ${assimpdevel_LIBRARIES} ${Boost_LIBRARIES} ${urdf_dom_LIBRARIES} ${libpcrecpp_LIBRARIES})
 add_dependencies(collada2eus_urdfmodel libassimp_devel)
 
-install(TARGETS collada2eus collada2eus_urdfmodel
+add_executable(compare_models src/compare_models.cpp)
+target_link_libraries(compare_models ${catkin_LIBRARIES} ${collada_parser_LIBRARIES} ${Boost_LIBRARIES} ${urdf_dom_LIBRARIES})
+
+install(TARGETS collada2eus collada2eus_urdfmodel compare_models
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
