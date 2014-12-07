@@ -81,7 +81,15 @@ class parseXmlBase:
             ret.append(float(r))
         return ret
 
-#class parseURDFBase(parseXmlBase):
+class parseURDFBase(parseXmlBase):
+    def removeJoint(self, jname):
+        return
+
+    def removeLink(self, lname):
+        return
+
+    def searchRootLink (self):
+        return
 
 class parseColladaBase(parseXmlBase):
     def searchLinkid (self, linkname):
