@@ -1114,7 +1114,8 @@ pointer CONVEX_DECOMP_GL_VERTICES(register context *ctx, int n, pointer *argv)
   //NxF32 mergeThresholdPercent = 20;
   //NxF32 volumeSplitThresholdPercent = 2;
   bool useInitialIslandGeneration = true;
-  bool useIslandGeneration = false;
+  //bool useIslandGeneration = false;
+  bool useIslandGeneration = true;
   bool useBackgroundThreads = false;
 
   ic->computeConvexDecomposition (skinWidth,

@@ -50,7 +50,12 @@ if(SDLIMG_FOUND)
   include_directories(${SDLIMG_INCLUDE_DIRS})
   target_link_libraries(eus_assimp ${SDLIMG_LIBRARIES})
 endif(SDLIMG_FOUND)
-
+###
+include_directories(/home/lyouhei/work/pull_requests/openrave/3rdparty/convexdecomposition)
+add_definitions(-DCOMPILE_CONVEX_DECOMPOSITION=1 -DLINUX)
+target_link_libraries(eus_assimp convexdecomposition)
+set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+###
 if(${CMAKE_SYSTEM_NAME} MATCHES Darwin)
  add_definitions(-Dx86_64)
  set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -flat_namespace -undefined suppress")

@@ -109,12 +109,12 @@
   (m* (m* (transpose trans) I) trans))
 
 ;;
-(defun create-inertia-model (robot)
+(defun create-inertia-model (robot &optional (links (send robot :links)))
   (let ((bds
          (mapcar #'(lambda (lk)
                      (format t "~%;;; ~A ;;;~%" (send lk :name))
                      (confirm-link-parameters lk))
-                 (send robot :links))))
+                 links)))
     (objects (append (list robot) bds))
     ))
 
