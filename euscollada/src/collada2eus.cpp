@@ -83,16 +83,23 @@ void writeTriangle(FILE *fp, domGeometry *thisGeometry, const char* robot_name) 
 
   fprintf(fp, "  (:def-gl-vertices ()\n");
   fprintf(fp, "    (setq gl::aglvertices\n");
+#if 0
   fprintf(fp, "       (instance gl::glvertices :init\n");
   fprintf(fp, "          (list\n"); // mesh-list
+#else
+  fprintf(fp, "          (copy-object '#1=#s(gl::glvertices plist nil rot #2f((1.0 0.0 0.0) (0.0 1.0 0.0) (0.0 0.0 1.0)) pos #f(0.0 0.0 0.0) parent nil descendants nil worldcoords #s(coordinates plist nil rot #2f((1.0 0.0 0.0) (0.0 1.0 0.0) (0.0 0.0 1.0)) pos #f(0.0 0.0 0.0)) manager #1# changed nil gl::mesh-list (");
+#endif
   // Triangulation
   // based on http://www.shader.jp/xoops/html/modules/mydownloads/singlefile.php?cid=5&lid=6
   for(int currentTriangle = 0; currentTriangle < triangleElementCount; currentTriangle++) {
-    fprintf(fp, "          (list\n"); // mesh-info
+#if 0
+    fprintf(fp, "          (list\n"); // --> mesh
     fprintf(fp, "           (list :type :triangles)\n");
-
+    fprintf(fp, "           (list :material (list\n"); // mesh-info
+#else
+    fprintf(fp, "((:type :triangles) (:material (");
+#endif
     domTriangles* thisTriangles = thisMesh->getTriangles_array().get(currentTriangle);
-    fprintf(fp, "           (list :material (list\n");
     // NEED FIX, we mut get matriar target name from database
     domMaterial* thisMaterial; string materialTarget;
     materialTarget = string(thisGeometry->getId())+string(".mat");
@@ -105,9 +112,15 @@ void writeTriangle(FILE *fp, domGeometry *thisGeometry, const char* robot_name) 
       if (verbose) {
         fprintf(stderr, "Could not find material %s, use 0.8 0.8 0.8\n", materialTarget.c_str());
       }
+#if 0
       fprintf(fp, "             (list :color (float-vector 0.1 0.1 0.1))\n");
       fprintf(fp, "             (list :ambient (float-vector 0.8 0.8 0.8 1.0))\n");
       fprintf(fp, "             (list :diffuse (float-vector 0.8 0.8 0.8 1.0))\n");
+#else
+      fprintf(fp, "(:color #f(0.1 0.1 0.1))");
+      fprintf(fp, "(:ambient #f(0.8 0.8 0.8 1.0))");
+      fprintf(fp, "(:diffuse #f(0.8 0.8 0.8 1.0))");
+#endif
     } else {
       domInstance_effect* thisInstanceEffect = thisMaterial->getInstance_effect();
       domEffect* thisEffect = daeSafeCast<domEffect>(g_dae->getDatabase()->idLookup(thisInstanceEffect->getUrl().id(),g_document));
@@ -130,34 +143,66 @@ void writeTriangle(FILE *fp, domGeometry *thisGeometry, const char* robot_name) 
         domImageRef image = daeSafeCast<domImage>(pinstanceimage->getUrl().getElement());
         if ( image && image->getInit_from() && image->getInit_from()->getRef() ) {
           //fprintf(stderr, "file: %s\n", string(image->getInit_from()->getRef()->getValue().path()).c_str());
+#if 0
           fprintf(fp, "             (list :filename \"%s\")\n",
                   string(image->getInit_from()->getRef()->getValue().path()).c_str());
+#else
+          fprintf(fp, "(:filename \"%s\")",
+                  string(image->getInit_from()->getRef()->getValue().path()).c_str());
+#endif
         }
         if (!(thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getDiffuse()->getColor())) {
+#if 0
           fprintf(fp, "             (list :diffuse (float-vector 1.0 1.0 1.0 0))\n");
+#else
+          fprintf(fp, "(:diffuse #f(1.0 1.0 1.0 0))");
+#endif
         }
       }
-
+#if 0
       fprintf(fp, "             (list :color (float-vector 0.1 0.1 0.1))\n"); // ???
+#else
+      fprintf(fp, "(:color #f(0.1 0.1 0.1))");
+#endif
       // euslisp uses diffuse for ambient
       if (!!(thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getAmbient()) &&
           !!(thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getAmbient()->getColor())) {
+#if 0
         fprintf(fp, "             (list :ambient (float-vector %f %f %f %f))\n",
                 thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getAmbient()->getColor()->getValue()[0],
                 thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getAmbient()->getColor()->getValue()[1],
                 thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getAmbient()->getColor()->getValue()[2],
                 thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getAmbient()->getColor()->getValue()[3]);
+#else
+        fprintf(fp, "(:ambient #f(%f %f %f %f))",
+                thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getAmbient()->getColor()->getValue()[0],
+                thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getAmbient()->getColor()->getValue()[1],
+                thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getAmbient()->getColor()->getValue()[2],
+                thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getAmbient()->getColor()->getValue()[3]);
+#endif
       }
       if (!!(thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getDiffuse()) &&
           !!(thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getDiffuse()->getColor())) {
+#if 0
         fprintf(fp, "             (list :diffuse (float-vector %f %f %f %f))\n",
                 thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getDiffuse()->getColor()->getValue()[0],
                 thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getDiffuse()->getColor()->getValue()[1],
                 thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getDiffuse()->getColor()->getValue()[2],
                 thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getDiffuse()->getColor()->getValue()[3]);
+#else
+        fprintf(fp, "(:diffuse #f(%f %f %f %f))",
+                thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getDiffuse()->getColor()->getValue()[0],
+                thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getDiffuse()->getColor()->getValue()[1],
+                thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getDiffuse()->getColor()->getValue()[2],
+                thisEffect->getFx_profile_array()[0]->getProfile_COMMON()->getTechnique()->getPhong()->getDiffuse()->getColor()->getValue()[3]);
+#endif
       }
     }
+#if 0
     fprintf(fp, "           ))\n"); // /material
+#else
+    fprintf(fp, "))"); // /material
+#endif
 
     int numberOfInputs = (int)getMaxOffset(thisTriangles->getInput_array()) +1;// offset
     int numberOfTriangles = (int)(thisTriangles->getP()->getValue().getCount() / numberOfInputs); // elements
@@ -178,13 +223,23 @@ void writeTriangle(FILE *fp, domGeometry *thisGeometry, const char* robot_name) 
     if (verbose) {
       fprintf(stderr, "offset = %d, noroffset = %d, texoffset = %d\n", offset, noroffset, texoffset);
     }
+#if 0
     fprintf(fp, "           (list :indices #i(");
     for(int i = 0; i < numberOfTriangles; i++) {
       int index = thisTriangles->getP()->getValue().get(i * numberOfInputs + offset);
       fprintf(fp, " %d", index);
     }
     fprintf(fp, "))\n"); // /indices
-
+#else
+    fprintf(fp, "(:indices #g(");
+    fprintf(fp, "(%d) :integer \"", numberOfTriangles);
+    for(int i = 0; i < numberOfTriangles; i++) {
+      int index = thisTriangles->getP()->getValue().get(i * numberOfInputs + offset);
+      char *tmp = (char *)&index;
+      for(int n = 0; n < 4; n++) putc(*tmp++, fp);
+    }
+    fprintf(fp, "\"))"); // /indices
+#endif
     int sourceElements = thisMesh->getSource_array().getCount();
     int currentSource = 0;
     if (verbose) {
@@ -201,6 +256,7 @@ void writeTriangle(FILE *fp, domGeometry *thisGeometry, const char* robot_name) 
       if (verbose) {
         fprintf(stderr, "numberOfVertices = %d\n", numberOfVertices);
       }
+#if 0
       fprintf(fp, "           (list :vertices #2f(");
       for(int i = 0; i < numberOfVertices / 3; i++) {
         // vertex vector
@@ -216,6 +272,33 @@ void writeTriangle(FILE *fp, domGeometry *thisGeometry, const char* robot_name) 
         points.push_back(a2);
       }
       fprintf(fp, "))\n"); // /vertices
+#else
+      fprintf(fp, "(:vertices #2g(");
+      fprintf(fp, "(%d 3) :double \"", numberOfVertices / 3);
+      for(int i = 0; i < numberOfVertices / 3; i++) {
+        // vertex vector
+        double a0, a1, a2;
+        a0 = thisMesh->getSource_array()[currentSource]->getFloat_array()->getValue().get(i * 3);
+        a1 = thisMesh->getSource_array()[currentSource]->getFloat_array()->getValue().get(i * 3 + 1);
+        a2 = thisMesh->getSource_array()[currentSource]->getFloat_array()->getValue().get(i * 3 + 2);
+        // store vertex vector to qhull
+        points.push_back(a0);
+        points.push_back(a1);
+        points.push_back(a2);
+
+        a0 *= (g_scale * 1000);
+        a1 *= (g_scale * 1000);
+        a2 *= (g_scale * 1000);
+        char *tmp;
+        tmp = (char *)&a0;
+        for(int n = 0; n < 8; n++) fputc(*tmp++, fp);
+        tmp = (char *)&a1;
+        for(int n = 0; n < 8; n++) fputc(*tmp++, fp);
+        tmp = (char *)&a2;
+        for(int n = 0; n < 8; n++) fputc(*tmp++, fp);
+      }
+      fprintf(fp, "\"))"); // /vertices
+#endif
       currentSource++;
       sourceElements--;
     }
@@ -299,9 +382,17 @@ void writeTriangle(FILE *fp, domGeometry *thisGeometry, const char* robot_name) 
         fprintf(stderr, "no texcoords\n");
       }
     }
-    fprintf(fp, "           )\n");
+#if 0
+    fprintf(fp, "           )\n"); // <-- mesh
+#else
+    fprintf(fp, ")");
+#endif
   }
+#if 0
   fprintf(fp, "           )))\n");
+#else
+  fprintf(fp, ") gl::filename nil gl::bbox nil)))\n");
+#endif
   fprintf(fp, "    (send gl::aglvertices :calc-normals)\n");
   if (points.size() > 0) {
     fprintf(fp, "    (send self :assoc gl::aglvertices)\n    gl::aglvertices)\n");
