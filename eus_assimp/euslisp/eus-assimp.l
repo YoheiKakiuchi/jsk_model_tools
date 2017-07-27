@@ -147,7 +147,13 @@
 (setf (symbol-function 'store-glvertices)
       (symbol-function 'save-mesh-file))
 ;;
-(defun append-glvertices (glv-lst)
+(defun append-glvertices (glv-lst &key (use-coordinate))
+  (cond
+   (use-coordinate
+    (let ((ret (instance gl::glvertices :init nil)))
+      (send ret :append-glvertices glv-lst))
+    )
+   (t
   (let (ret)
     (dolist (glv glv-lst)
       (let ((mlst (glv . gl::mesh-list))
@@ -156,6 +162,7 @@
         (setq ret (append ret mlst))
         ))
     (instance gl::glvertices :init ret)))
+   ))
 
 (defun convex-decomposition-glvertices (glvtcs
                                         &key (add-color nil) (color-num 8)
