@@ -4,7 +4,7 @@ project(eus_assimp)
 
 # Load catkin and all dependencies required for this package
 # TODO: remove all from COMPONENTS that are not catkin packages.
-find_package(catkin REQUIRED COMPONENTS euslisp)
+find_package(catkin REQUIRED COMPONENTS euslisp fcl)
 
 set(ENV{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:${CATKIN_DEVEL_PREFIX}/lib/pkgconfig")
 
@@ -58,6 +58,15 @@ if(${CMAKE_SYSTEM_NAME} MATCHES Darwin)
 endif()
 
 set_target_properties(eus_assimp PROPERTIES PREFIX "" SUFFIX ".so")
+
+include_directories(/usr/include ${euslisp_INCLUDE_DIRS} ${fcl_INCLUDE_DIRS})
+link_directories(${fcl_LIBRARY_DIRS})
+
+add_library(test_fcl src/test_fcl.cpp)
+
+target_link_libraries(test_fcl ${fcl_LIBRARIES})
+set_target_properties(test_fcl PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/euslisp)
+set_target_properties(test_fcl PROPERTIES PREFIX "" SUFFIX ".so")
 
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
