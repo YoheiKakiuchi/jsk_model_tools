@@ -59,6 +59,18 @@ endif()
 
 set_target_properties(eus_assimp PROPERTIES PREFIX "" SUFFIX ".so")
 
+##
+find_package(CGAL COMPONENTS Core)
+if (CGAL_FOUND)
+  add_library(constrained_delaunay src/constrained_delaunay.cpp)
+  include_directories(${CGAL_INCLUDE_DIRS})
+  add_definitions(-frounding-math -fPIC -std=gnu++14)
+  target_link_libraries(constrained_delaunay CGAL::CGAL CGAL::CGAL_Core)
+  set_target_properties(constrained_delaunay PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/euslisp)
+  set_target_properties(constrained_delaunay PROPERTIES PREFIX "" SUFFIX ".so")
+endif()
+
+
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
