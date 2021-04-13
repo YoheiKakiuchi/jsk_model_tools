@@ -1,0 +1,26 @@
+#!/bin/bash
+
+URDF_FILE=
+DAE_FILE=
+
+RUN_LOG="$(rosrun collada_urdf collada_to_urdf $@ 2>&1)"
+errid=$?
+
+if [ ! $errid -eq 0 ]; then
+    echo "error occurred!!"
+    echo "$RUN_LOG"
+    exit $errid
+fi
+
+#;; output file is: input.dae
+#;; Input file is: output.urdf
+
+URDF_FILE=$(echo "$RUN_LOG" | sed -z -e 's/.*;; output file is: \(.*\)\n;;.*/\1/')
+DAE_FILE=$(echo "$RUN_LOG" | sed -z -e 's/.*;; Input file is: \([^\n]*\)\n.*/\1/')
+
+echo "urdf: ${URDF_FILE}"
+echo " dae: ${DAE_FILE}"
+
+sed -i -e 's@</robot>@@g' ${URDF_FILE}
+rosrun euscollada collada_sensor_parser -I ${DAE_FILE} >> ${URDF_FILE}
+echo "</robot>" >> ${URDF_FILE}

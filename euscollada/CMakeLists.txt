@@ -27,6 +27,7 @@ IF(${yaml_cpp_VERSION} VERSION_GREATER "0.5.0")
 ## indigo yaml-cpp : 0.5.0 /  hydro yaml-cpp : 0.3.0
   add_definitions("-DUSE_CURRENT_YAML")
 ENDIF()
+
 pkg_check_modules(assimpdevel assimp_devel REQUIRED)
 
 pkg_check_modules(URDFDOM REQUIRED urdfdom)
@@ -45,8 +46,13 @@ include_directories(${Boost_INCLUDE_DIR})
 add_executable(collada2eus src/collada2eus_urdfmodel.cpp)
 target_link_libraries(collada2eus ${catkin_LIBRARIES} qhull ${yaml_cpp_LIBRARIES} ${colladadom_LIBRARIES} ${collada_parser_LIBRARIES} ${recource_retriever_LIBRARIES} ${assimpdevel_LIBRARIES} ${Boost_LIBRARIES} ${urdf_dom_LIBRARIES})
 add_dependencies(collada2eus libassimp_devel)
+##
+add_executable(collada_sensor_parser src/collada_to_urdf_sensoronly.cpp src/collada_sensor_parser.cpp)
+target_link_libraries(collada_sensor_parser ${catkin_LIBRARIES} ${colladadom_LIBRARIES})
+##
 if ("${URDFDOM_VERSION}" VERSION_EQUAL "1.0.0" OR "${URDFDOM_VERSION}" VERSION_GREATER "1.0.0")
   target_compile_definitions(collada2eus PRIVATE -DURDFDOM_1_0_0_API)
+  target_compile_definitions(collada_sensor_parser PRIVATE -DURDFDOM_1_0_0_API)
 endif()
 
 install(TARGETS collada2eus collada2eus.orig
