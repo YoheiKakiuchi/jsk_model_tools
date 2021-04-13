@@ -25,8 +25,20 @@ fi
 #;; output file is: input.dae
 #;; Input file is: output.urdf
 
-URDF_FILE=$(echo "$RUN_LOG" | sed -z -e 's/.*;; output file is: \(.*\)\n;;.*/\1/')
-DAE_FILE=$(echo "$RUN_LOG" | sed -z -e 's/.*;; Input file is: \([^\n]*\)\n.*/\1/')
+OUTFILE=$(echo "$RUN_LOG" | sed -n -e '/output file/p')
+INFILE=$(echo "$RUN_LOG" | sed -n -e '/Input file/p')
+#echo " IN: ${INFILE}"
+#echo "OUT: ${OUTFILE}"
+
+if [ ! "${INFILE}" = "" ]; then
+    DAE_FILE=$(echo "${INFILE}" | sed -z -e 's/.*;; Input file is: \([^\n]*\)\n.*/\1/')
+fi
+
+if [ ! "${OUTFILE}" = "" ]; then
+    URDF_FILE=$(echo "${OUTFILE}" | sed -z -e 's/.*;; output file is: \(.*\)\n.*/\1/')
+else
+    URDF_FILE=$(dirname ${DAE_FILE})/$(basename ${DAE_FILE} dae)urdf
+fi
 
 echo "urdf: ${URDF_FILE}"
 echo " dae: ${DAE_FILE}"
