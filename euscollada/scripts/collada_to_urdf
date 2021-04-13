@@ -1,10 +1,20 @@
 #!/bin/bash
 
+##
+## ${_collada_to_urdf_exe} ${_daefile} --output_file ${_urdffile} -G -A --mesh_output_dir $(rospack find package_name) --mesh_prefix 'package://package_name/mesh/'
+##
+
 URDF_FILE=
 DAE_FILE=
 
-RUN_LOG="$(rosrun collada_urdf collada_to_urdf $@ 2>&1)"
-errid=$?
+rospack find collada_urdf_jsk_patch
+if [ $? -eq 0 ]; then
+    RUN_LOG="$(rosrun collada_urdf_jsk_patch collada_to_urdf $@ 2>&1)"
+    errid=$?
+else
+    RUN_LOG="$(rosrun collada_urdf collada_to_urdf $@ 2>&1)"
+    errid=$?
+fi
 
 if [ ! $errid -eq 0 ]; then
     echo "error occurred!!"
@@ -24,3 +34,4 @@ echo " dae: ${DAE_FILE}"
 sed -i -e 's@</robot>@@g' ${URDF_FILE}
 rosrun euscollada collada_sensor_parser -I ${DAE_FILE} >> ${URDF_FILE}
 echo "</robot>" >> ${URDF_FILE}
+
