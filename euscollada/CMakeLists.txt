@@ -55,7 +55,7 @@ if ("${URDFDOM_VERSION}" VERSION_EQUAL "1.0.0" OR "${URDFDOM_VERSION}" VERSION_G
   target_compile_definitions(collada_sensor_parser PRIVATE -DURDFDOM_1_0_0_API)
 endif()
 
-install(TARGETS collada2eus collada2eus.orig
+install(TARGETS collada2eus collada2eus.orig collada_sensor_parser
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
